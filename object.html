@@ -1,0 +1,45 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>Some unknown CHAOS object.</title>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" type="text/javascript"></script>
+		<script src="CHAOS.Portal.Client.PortalClient.js" type="text/javascript"></script>
+		<script type="text/javascript">
+		$(function(){
+			var ChaosSettings = {
+				"servicePath":"http://api.chaos-systems.com/",
+				"clientGUID":"9f62060c-64ff-e14f-a8d5-d85a1e2e21b8",
+				"accessPointGUID":"C4C2B8DA-A980-11E1-814B-02CEA2621172",
+			};
+			// Instantiate client
+			var client = new PortalClient(
+				ChaosSettings.servicePath,
+				ChaosSettings.clientGUID
+			);
+			
+			var objectGUID = location.hash.substring(1);
+			
+			client.SessionAcquired().Add(function(sender, sessionGUID) {
+				client.Object_GetByObjectGUID(function(result) {
+					var results = result.MCM().Results()
+					var object = results[0];
+					for(m in object.Metadatas) {
+						var metadata = object.Metadatas[m];
+						metadata.MetadataXML = $.parseXML(metadata.MetadataXML);
+						var title = $("DKA > Title", metadata.MetadataXML).text();
+						var description = $("DKA > Description", metadata.MetadataXML).text();
+						document.title = title;
+						$("<h1>").html(title).appendTo(document.body);
+						$("<p>").html(description).appendTo(document.body);
+					}
+					console.log(object);
+				}, objectGUID, ChaosSettings.accessPointGUID, true, true);
+			});
+			
+		});
+		</script>
+	</head>
+	<body>
+	</body>
+</html>
