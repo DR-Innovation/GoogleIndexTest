@@ -20,7 +20,6 @@ $CLIENT_GUID = "307698db-0704-49d7-a3f1-d2afebb9d4b0";
 $ACCESSPOINT_GUID = "C4C2B8DA-A980-11E1-814B-02CEA2621172";
 // The number of objects visible pr. page.
 $PAGE_SIZE = 500;
-$SITEMAP_SIZE = 5000;
 // A priority between metadata schemas.
 $METADATA_SCHEMA_PRIORITY = array('5906a41b-feae-48db-bfb7-714b3e105396', '00000000-0000-0000-0000-000063c30000');
 
@@ -28,9 +27,10 @@ $METADATA_SCHEMA_PRIORITY = array('5906a41b-feae-48db-bfb7-714b3e105396', '00000
 $chaos = new \CHAOS\Portal\Client\PortalClient($CHAOS_URL, $CLIENT_GUID);
 
 $sitemapIndex = array_key_exists('sitemapIndex', $_GET) ? intval($_GET['sitemapIndex']) : 0;
+$sitemapSize = array_key_exists('sitemapSize', $_GET) ? intval($_GET['sitemapSize']) : 5000;
 
 // Page index from the URL
-$pageIndex = floor($sitemapIndex * $SITEMAP_SIZE / $PAGE_SIZE);
+$pageIndex = floor($sitemapIndex * $sitemapSize / $PAGE_SIZE);
 	
 function getObjectURL($object) {
 	return sprintf("http://indexing.danskkulturarv.dk/object.html?sitemapped#%s", $object->GUID);
@@ -46,11 +46,11 @@ do {
 	foreach($response->MCM()->Results() as $object) {
 		echo getObjectURL($object) . "\n";
 		$number_of_printed_objects++;
-		if($number_of_printed_objects >= $SITEMAP_SIZE) {
+		if($number_of_printed_objects >= $sitemapSize) {
 			break;
 		}
 	}
 	$pageIndex++;
-} while($number_of_printed_objects < $SITEMAP_SIZE);
+} while($number_of_printed_objects < $sitemapSize);
 
 ?>
